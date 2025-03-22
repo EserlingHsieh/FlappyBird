@@ -1,5 +1,5 @@
 // Bird variables
-int birdX = 50; // Starting X position of the bird
+int birdX = 50; // X position of the bird
 int birdY; // The vertical position of the bird
 int birdVelocity; // The current vertical velocity of the bird
 int gravity = 1; // The force pulling the bird downward
@@ -26,11 +26,6 @@ boolean TESTING = true; // Set to false to play the game normally
 boolean[] pipeCollided = new boolean[pipeTotal]; // Tracks whether each pipe has been collided with by the bird
 
 
-// For endless mode
-// int poolSize = 3;
-// int[] poolX = new int[poolSize];
-// int[] poolY = new int[poolSize];
-// boolean[] poolCollided = new boolean[poolSize];
 
 void setup() {
     size(400, 600);
@@ -42,7 +37,7 @@ void draw() {
     
     if (!gameOver) {
         // Bird
-        /* Practice: Draw bird and add gravity to it */
+        /* Practice1-1: Draw bird and add gravity to it */
         birdVelocity += gravity;
         birdY += birdVelocity;
         fill(255, 255, 0);
@@ -51,9 +46,8 @@ void draw() {
         
         // Pipes
         drawPipes();
-        // drawPipesEndless();
         
-        /* Practice: Check if bird hits the ground or ceiling */
+        /* Practice1-3: Check if bird hits the ground or ceiling */
         if (birdY > height || birdY < 0) {
             gameOver = true;
         }
@@ -65,10 +59,14 @@ void draw() {
         text("Score: " + score, 10, 30);
         
     } else {
-        /* Practice: Display score and game over message */
+        /* Practice3-1: Display score and game over message */
         fill(0);
         textSize(32);
+        if(score==20){
+        text("Game Win", width / 2 - 80, height / 2);
+        }else{
         text("Game Over", width / 2 - 80, height / 2);
+        }
         text("Score: " + score, width / 2 - 60, height / 2 + 40);
         text("Press 'r' to restart", width / 2 - 120, height / 2 + 80);
         /* --------------------------------------------- */
@@ -76,25 +74,21 @@ void draw() {
 }
 
 void drawPipes() {
-    /* Practice: Use loop to move pipes and check collision with bird */
+    /* Practice2-2: Use loop to move pipes and check collision with bird */
     for (int i = 0; i < pipeX.length; i++) {
         pipeX[i] -= pipeSpeed;
-        if (pipeX[i] < -pipeWidth) { // Pipe is off screen
+        if (pipeX[i] < -pipeWidth || pipeX[i] > width) { // If pipe is not in screen, skip
+            continue;
+        }
+        if (pipeX[i] + pipeSpeed > birdX && pipeX[i] <= birdX) { // If bird is going to pass through pipe in this frame
+            score++;
             // Check if this is the last pipe, if so, game over
             if (i == pipeX.length - 1) {
                 gameOver = true;
             }
-            continue; // Skip to next pipe
-        }
-        else if (pipeX[i] + pipeSpeed > birdX && pipeX[i] <= birdX) {
-            // Bird passed the pipe
-            score++;
-        }
-        else if (pipeX[i] > width) { // Pipe is not yet in screen, skip to next pipe
-            continue;
         }
         
-        // Check collision
+        // Practice2-3: Check collision between the bird and pipes
         if (birdX + 16 > pipeX[i] && birdX - 16 < pipeX[i] + pipeWidth) {
             if (birdY - 16 < pipeY[i] - pipeGap / 2 || birdY + 16 > pipeY[i] + pipeGap / 2) {
                 if (TESTING) {
@@ -104,54 +98,14 @@ void drawPipes() {
                 }
             }
         }
-
+        // Draw pipe
         drawPipe(pipeX[i], pipeY[i], pipeWidth, pipeGap, pipeCollided[i]);
     }
     /* --------------------------------------------- */
 }
 
-void drawPipesEndless() {
-    /* Challenge: Pool of pipes */
-    for (int i = 0; i < pipeX.length; i++) {
-        pipeX[i] -= pipeSpeed;
-        if (pipeX[i] < -pipeWidth) { // Pipe is off screen
-            // Rearrange pipe to display at the end
-            if (i == 0) {
-                pipeX[i] = pipeX[pipeX.length - 1] + pipeDistance - pipeSpeed;
-            }
-            else {
-                pipeX[i] = pipeX[i - 1] + pipeDistance;
-            }
-            pipeY[i] = int(random(pipeMinHeight + pipeGap / 2, height - pipeMinHeight - pipeGap / 2));
-            pipeCollided[i] = false;
-        }
-        else if (pipeX[i] + pipeSpeed > birdX && pipeX[i] <= birdX) {
-            // Bird passed the pipe
-            score++;
-        }
-        else if (pipeX[i] > width) { // Pipe is not yet in screen, skip to next pipe
-            continue;
-        }
-        
-        // Check collision
-        if (birdX + 16 > pipeX[i] && birdX - 16 < pipeX[i] + pipeWidth) {
-            if (birdY - 16 < pipeY[i] - pipeGap / 2 || birdY + 16 > pipeY[i] + pipeGap / 2) {
-                if (TESTING) {
-                    pipeCollided[i] = true;
-                } else {
-                    gameOver = true;
-                }
-            }
-        }
 
-        drawPipe(pipeX[i], pipeY[i], pipeWidth, pipeGap, pipeCollided[i]);
-    }
-    // Gradually increase speed
-    if (frameCount % 300 == 0) {
-        pipeSpeed++;
-    }
-    /* --------------------------------------------- */
-}
+
 
 void drawPipe(int x, int y, int width, int gap, boolean collided) {
     if (collided) {
@@ -161,17 +115,15 @@ void drawPipe(int x, int y, int width, int gap, boolean collided) {
     }
     rect(x, 0, width, y - gap / 2);
     rect(x, y + gap / 2, pipeWidth, height - y - gap / 2);
-    // rect(pipeX[i], 0, pipeWidth, pipeY[i] - pipeGap);
-    // rect(pipeX[i], pipeY[i], pipeWidth, height - pipeY[i]);
 }
 
 void keyPressed() {
-    /* Practice: Add lift to bird when space is pressed */
+    /* Practice1-2: Add lift to bird when space is pressed */
     if (key == ' ') {
         birdVelocity = lift;
     }
     /* --------------------------------------------- */
-    /* Practice: Reset game when game over and 'r' is pressed */
+    /* Practice3-1: Reset game when game over and 'r' is pressed */
     if (gameOver && key == 'r') {
         resetGame();
     }
@@ -181,13 +133,14 @@ void keyPressed() {
 
 
 void resetGame() {
-    birdY = height / 2;
+    birdY = height / 3;
     birdVelocity = 0;
-    /* Practice: Setup pipe positions using for loop */
+    /* Practice2-1: Setup pipe positions using for loop */
+    
     for (int i = 0; i < pipeX.length; i++) {
         pipeX[i] = width + i * pipeDistance;
         pipeY[i] = int(random(pipeMinHeight + pipeGap / 2, height - pipeMinHeight - pipeGap / 2));
-        pipeCollided[i] = false;
+        pipeCollided[i] = false; //when pipeCollided is true, the pipe will turn red
     }
     score = 0;
     gameOver = false;
