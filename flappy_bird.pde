@@ -76,11 +76,14 @@ void draw() {
 void drawPipes() {
     /* Practice2-2: Use loop to move pipes and check collision with bird */
     for (int i = 0; i < pipeX.length; i++) {
+        //pipeX add spped
         pipeX[i] -= pipeSpeed;
-        if (pipeX[i] < -pipeWidth || pipeX[i] > width) { // If pipe is not in screen, skip
+        // If pipe is not in screen(left or right), skip
+        if (pipeX[i] < -pipeWidth || pipeX[i] > width) { 
             continue;
         }
-        if (pipeX[i] + pipeSpeed > birdX && pipeX[i] <= birdX) { // If bird is going to pass through pipe in this frame
+        // If bird is going to pass through this pipe, add score
+        if (pipeX[i] + pipeSpeed > birdX && pipeX[i] <= birdX) { 
             score++;
             // Check if this is the last pipe, if so, game over
             if (i == pipeX.length - 1) {
@@ -142,7 +145,7 @@ void resetGame() {
         pipeY[i] = int(random(pipeMinHeight + pipeGap / 2, height - pipeMinHeight - pipeGap / 2));
         pipeCollided[i] = false; //when pipeCollided is true, the pipe will turn red
     }
+    /* --------------------------------------------- */
     score = 0;
     gameOver = false;
-    /* --------------------------------------------- */
 }
