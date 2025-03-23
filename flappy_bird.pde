@@ -78,7 +78,7 @@ void draw() {
         text("Score: " + score, 10, 30);
         
     } else {
-        /* Practice3-1: Display score and game over message */
+       
         fill(0);
         textSize(32);
         if(score==20){
@@ -149,7 +149,6 @@ void keyPressed() {
         birdVelocity = lift;
     }
     /* --------------------------------------------- */
-    /* Practice3-1: Reset game when game over and 'r' is pressed */
     if (gameOver && key == 'r') {
         init();
     }
